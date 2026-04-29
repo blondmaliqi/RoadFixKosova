@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rrugë në punë Gjilan – Lajme të trafikut në kohë reale</title>
+    <meta name="description" content="Platforma për lajme të trafikut në Gjilan. Punime, bllokime, devijime dhe projekte infrastrukturore në kohë reale.">
+    <meta name="keywords" content="Gjilan, trafik, rrugë, bllokim, punime, devijime, infrastrukturë">
+    
+    <meta property="og:title" content="Rrugë në punë Gjilan – Lajme të trafikut në kohë reale">
+    <meta property="og:description" content="Platforma për lajme të trafikut në Gjilan. Punime, bllokime, devijime dhe projekte infrastrukturore.">
+    <meta property="og:type" content="website">
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Rrugë në punë Gjilan",
+        "alternateName": "Trafiku Gjilan",
+        "url": "https://rrugenepune-gjilan.info",
+        "description": "Platforma për lajme të trafikut në Gjilan në kohë reale"
+    }
+    </script>
+    
+    <!-- Leaflet CSS - Versioni 1.9.4 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Leaflet Fullscreen CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-fullscreen@1.0.2/dist/leaflet.fullscreen.css" />
+    
+    <!-- Leaflet MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    <!-- ============ NAVBAR ============ -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="#" class="logo" onclick="navigateTo('home')">
+                    <i class="fas fa-road logo-icon"></i>
+                    <div class="logo-text">
+                        <span class="logo-title">Rrugë në punë</span>
+                        <span class="logo-subtitle">Gjilan</span>
+                    </div>
+                </a>
+                
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#" class="nav-link active" onclick="navigateTo('home')">Ballina</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(event)">
+                            Kategoritë <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <div class="dropdown-menu" id="categoryDropdown">
+                            <a href="#" onclick="navigateTo('kategoria', 'punime')">
+                                <i class="fas fa-tools"></i> Punime në rrugë
+                            </a>
+                            <a href="#" onclick="navigateTo('kategoria', 'bllokime')">
+                                <i class="fas fa-ban"></i> Bllokime trafiku
+                            </a>
+                            <a href="#" onclick="navigateTo('kategoria', 'devijime')">
+                                <i class="fas fa-directions"></i> Devijime
+                            </a>
+                            <a href="#" onclick="navigateTo('kategoria', 'projekte')">
+                                <i class="fas fa-hard-hat"></i> Projekte infrastrukturore
+                            </a>
+                        </div>
+                    </li>
+                    <li><a href="#" class="nav-link" onclick="navigateTo('arkiva')">Arkiva</a></li>
+                    <li><a href="#" class="nav-link" onclick="navigateTo('rreth')">Rreth nesh</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="btn-icon search-toggle" id="searchToggle" onclick="toggleSearch()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    
+                    <!-- Harta buton në navbar -->
+                    <button class="btn btn-primary btn-subscribe" onclick="navigateToMapView()">
+                        <i class="fas fa-map"></i>
+                        <span class="btn-text">Harta</span>
+                    </button>
+                    
+                    <button class="btn btn-warning btn-subscribe" id="subscribeBtn" onclick="openSubscribeModal()">
+                        <i class="fas fa-bell"></i>
+                        <span class="btn-text">Abonohu</span>
+                    </button>
+                    
+                    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-bar" id="searchBar">
+                <div class="search-form">
+                    <input type="text" id="searchInput" placeholder="Kërko lajme, rrugë, lagje..." class="search-input" onkeyup="handleSearch(event)">
+                    <button class="btn-search" onclick="performSearch()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- ============ PËRMBAJTJA KRYESORE ============ -->
+    <main id="mainContent"></main>
+    
+    <!-- ============ FOOTER ============ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="#" class="footer-logo" onclick="navigateTo('home')">
+                        <i class="fas fa-road"></i> Rrugë në punë Gjilan
+                    </a>
+                    <p>
+                        Platforma më e plotë për informacione rreth trafikut dhe 
+                        infrastrukturës në komunën e Gjilanit.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Linke të shpejta</h4>
+                    <ul>
+                        <li><a href="#" onclick="navigateTo('kategoria', 'bllokime')">Bllokime aktive</a></li>
+                        <li><a href="#" onclick="navigateTo('kategoria', 'punime')">Punime në rrugë</a></li>
+                        <li><a href="#" onclick="navigateTo('arkiva')">Arkiva e lajmeve</a></li>
+                        <li><a href="#" onclick="navigateTo('rreth')">Rreth nesh</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Burime zyrtare</h4>
+                    <ul>
+                        <li><a href="https://kk.rks-gov.net/gjilan" target="_blank">Komuna e Gjilanit</a></li>
+                        <li><a href="#" target="_blank">Policia e Kosovës</a></li>
+                        <li><a href="#" target="_blank">ARRSH</a></li>
+                        <li><a href="#" target="_blank">Drejtoria për Shërbime Publike</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Kontakti</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@rrugenepune-gjilan.info</li>
+                        <li><i class="fas fa-phone"></i> +383 44 000 000</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Gjilan, Kosovë</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Rrugë në punë Gjilan. Të gjitha të drejtat e rezervuara.</p>
+                <div class="footer-links-bottom">
+                    <a href="#">Kushtet e përdorimit</a>
+                    <a href="#">Privatësia (GDPR)</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- ============ MODALI I ABONIMIT ============ -->
+    <div class="modal" id="subscribeModal">
+        <div class="modal-overlay" onclick="closeSubscribeModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSubscribeModal()">&times;</button>
+            <div class="modal-icon">
+                <i class="fas fa-bell"></i>
+            </div>
+            <h2>Abonohu për njoftime</h2>
+            <p>Merr njoftime në kohë reale për bllokime, punime dhe devijime në trafik.</p>
+            
+            <form class="subscribe-modal-form" onsubmit="handleSubscribe(event)">
+                <input type="email" id="subscribeEmail" placeholder="Email-i juaj" class="form-input" required>
+                <div class="modal-categories">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="subBllokime" checked> Bllokime trafiku
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="subPunime" checked> Punime në rrugë
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="subDevijime"> Devijime
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="subProjekte"> Projekte infrastrukturore
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    Abonohu tani
+                </button>
+                <p class="privacy-note">
+                    <i class="fas fa-lock"></i> Të dhënat tuaja janë të sigurta. 
+                    Mund të çabonoheni në çdo moment.
+                </p>
+            </form>
+        </div>
+    </div>
+    
+    <!-- ============ MODALI I LAJMIT ============ -->
+    <div class="modal" id="lajmiModal">
+        <div class="modal-overlay" onclick="closeLajmiModal()"></div>
+        <div class="modal-content modal-lajm">
+            <button class="modal-close" onclick="closeLajmiModal()">&times;</button>
+            <div id="lajmiModalContent"></div>
+        </div>
+    </div>
+    
+    <!-- ============ MODALI I HARTËS FULLSCREEN ============ -->
+    <div class="modal modal-fullscreen" id="mapModal">
+        <div class="modal-overlay" onclick="closeMapModal()"></div>
+        <div class="modal-content map-modal-content">
+            <button class="modal-close" onclick="closeMapModal()">&times;</button>
+            <div class="map-modal-header">
+                <h2><i class="fas fa-map-marked-alt"></i> Harta interaktive e trafikut - Gjilan</h2>
+                <div class="map-controls">
+                    <div class="map-layer-controls">
+                        <button class="map-layer-btn active" data-layer="street">
+                            <i class="fas fa-road"></i> Hartë
+                        </button>
+                        <button class="map-layer-btn" data-layer="satellite">
+                            <i class="fas fa-satellite"></i> Satelit
+                        </button>
+                        <button class="map-layer-btn" data-layer="terrain">
+                            <i class="fas fa-mountain"></i> Terren
+                        </button>
+                    </div>
+                    <div class="map-legend">
+                        <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Bllokime</span>
+                        <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Punime</span>
+                        <span class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> Devijime</span>
+                        <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Projekte</span>
+                    </div>
+                    <button class="map-locate-btn" onclick="locateMeOnMap()">
+                        <i class="fas fa-location-crosshairs"></i> Lokacioni im
+                    </button>
+                </div>
+            </div>
+            <div id="fullscreenMap" class="fullscreen-map"></div>
+            <div class="map-info-bar" id="mapInfoBar">
+                <span id="mapInfoText">Klikoni mbi markerët për më shumë informacion</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ============ COOKIE BANNER ============ -->
+    <div class="cookie-banner" id="cookieBanner">
+        <div class="cookie-content">
+            <p>
+                🍪 Ky sajt përdor cookies për të përmirësuar përvojën tuaj.
+                <a href="#">Më shumë info</a>
+            </p>
+            <div class="cookie-buttons">
+                <button class="btn btn-sm btn-outline" onclick="hideCookieBanner()">Parametrat</button>
+                <button class="btn btn-sm btn-primary" onclick="acceptCookies()">Prano</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ============ TOAST CONTAINER ============ -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Leaflet JS - Versioni 1.9.4 -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Leaflet Fullscreen -->
+    <script src="https://unpkg.com/leaflet-fullscreen@1.0.2/dist/Leaflet.fullscreen.min.js"></script>
+    
+    <!-- Leaflet MarkerCluster -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    
+    <!-- Google Maps Tile Layer (për satelit) -->
+    <script src="https://cdn.jsdelivr.net/gh/shramov/leaflet-plugins@master/layer/tile/Google.js"></script>
+    
+    <script src="script.js"></script>
+    
+</body>
+</html>
