@@ -250,17 +250,8 @@ function renderHomePage() {
                         </div>
                     </div>
                     <div class="hero-illustration">
-                        <svg class="hero-img" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="400" height="300" fill="#1e3a8a" rx="16"/>
-                            <circle cx="200" cy="150" r="80" fill="none" stroke="#f59e0b" stroke-width="2" opacity="0.5"/>
-                            <circle cx="200" cy="150" r="50" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.7"/>
-                            <circle cx="200" cy="150" r="5" fill="white"/>
-                            <circle cx="120" cy="120" r="4" fill="#ef4444"/>
-                            <circle cx="250" cy="180" r="4" fill="#f59e0b"/>
-                            <circle cx="280" cy="100" r="4" fill="#10b981"/>
-                            <text x="200" y="270" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="12">Harta e Gjilanit – Pikat e trafikut</text>
-                        </svg>
-                    </div>
+    <img src="gjilan.png" alt="Harta e Gjilanit" class="hero-img">
+</div>
                 </div>
             </div>
         </section>
@@ -774,6 +765,9 @@ function initFullscreenMap() {
     setTimeout(() => fullscreenMapInstance.invalidateSize(), 300);
 }
 
+
+
+
 // Harta në faqen e dedikuar
 function initFullscreenMapView() {
     const mapElement = document.getElementById('fullscreenMapView');
@@ -798,42 +792,45 @@ function initFullscreenMapView() {
     setTimeout(() => fullscreenMapInstance.invalidateSize(), 300);
 }
 
+
+
+
 // Shto shtresat e hartës
 function addTileLayers(mapInstance, mapId) {
-    // Shtresa e hartës standarde
+    // Shtresa e hartës standarde (OpenStreetMap)
     const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        attribution: '&copy; OpenStreetMap',
         maxZoom: 19
     });
     
-    // Shtresa satelitore (Esri World Imagery)
-    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: '&copy; Esri, Maxar, Earthstar Geographics',
-        maxZoom: 19
+    // Shtresa satelitore (Google Maps)
+    const satelliteLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+        attribution: '&copy; Google Maps',
+        maxZoom: 20
     });
     
     // Shtresa e terrenit (OpenTopoMap)
     const terrainLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors',
+        attribution: '&copy; OpenTopoMap',
         maxZoom: 17
     });
     
-    // Ruaj referencat
-    if (mapId === 'fullscreen') {
-        mapLayers.street = streetLayer;
-        mapLayers.satellite = satelliteLayer;
-        mapLayers.terrain = terrainLayer;
-    }
-    
-    // Shto shtresën aktive
+    // Shto shtresën default
     streetLayer.addTo(mapInstance);
     
-    // Ruaj shtresat në map instance
+    // RUAJ GJITHMONË në mapInstance (jo në mapLayers globale)
     mapInstance._streetLayer = streetLayer;
     mapInstance._satelliteLayer = satelliteLayer;
     mapInstance._terrainLayer = terrainLayer;
     mapInstance._currentLayerType = 'street';
+    
+    console.log('✅ Shtresat u ngarkuan për:', mapId);
+    console.log('  - _streetLayer:', !!mapInstance._streetLayer);
+    console.log('  - _satelliteLayer:', !!mapInstance._satelliteLayer);
+    console.log('  - _terrainLayer:', !!mapInstance._terrainLayer);
 }
+    
+  
 
 function switchMapLayer(mapInstance, type) {
     if (!mapInstance) return;
@@ -847,6 +844,9 @@ function switchMapLayer(mapInstance, type) {
     } else if (currentType === 'terrain' && mapInstance._terrainLayer) {
         mapInstance.removeLayer(mapInstance._terrainLayer);
     }
+
+
+    
     
     // Shto shtresën e re
     if (type === 'street' && mapInstance._streetLayer) {
@@ -860,16 +860,52 @@ function switchMapLayer(mapInstance, type) {
     mapInstance._currentLayerType = type;
 }
 
+
+
 function switchFullscreenMapType(type) {
-    // Përditëso butonat në modal ose faqe
+    console.log('🔄 Duke ndërruar në:', type);
+    console.log('  fullscreenMapInstance:', !!fullscreenMapInstance);
+    
+    // Përditëso butonat
     document.querySelectorAll('.map-layer-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.layer === type) btn.classList.add('active');
     });
     
-    if (fullscreenMapInstance) {
-        switchMapLayer(fullscreenMapInstance, type);
+    if (!fullscreenMapInstance) {
+        console.log('❌ Harta fullscreen nuk ekziston!');
+        return;
     }
+    
+    console.log('  _satelliteLayer:', !!fullscreenMapInstance._satelliteLayer);
+    console.log('  _terrainLayer:', !!fullscreenMapInstance._terrainLayer);
+    
+    // Hiq të gjitha shtresat
+    if (fullscreenMapInstance._streetLayer) {
+        fullscreenMapInstance.removeLayer(fullscreenMapInstance._streetLayer);
+    }
+    if (fullscreenMapInstance._satelliteLayer) {
+        fullscreenMapInstance.removeLayer(fullscreenMapInstance._satelliteLayer);
+    }
+    if (fullscreenMapInstance._terrainLayer) {
+        fullscreenMapInstance.removeLayer(fullscreenMapInstance._terrainLayer);
+    }
+    
+    // Shto shtresën e kërkuar
+    if (type === 'street' && fullscreenMapInstance._streetLayer) {
+        fullscreenMapInstance._streetLayer.addTo(fullscreenMapInstance);
+        console.log('✅ Hartë e aktivizuar');
+    } else if (type === 'satellite' && fullscreenMapInstance._satelliteLayer) {
+        fullscreenMapInstance._satelliteLayer.addTo(fullscreenMapInstance);
+        console.log('✅ Satelit i aktivizuar');
+    } else if (type === 'terrain' && fullscreenMapInstance._terrainLayer) {
+        fullscreenMapInstance._terrainLayer.addTo(fullscreenMapInstance);
+        console.log('✅ Terren i aktivizuar');
+    } else {
+        console.log('❌ Shtresa nuk u gjet për:', type);
+    }
+    
+    fullscreenMapInstance._currentLayerType = type;
 }
 
 // Shto markerët në hartë
@@ -953,7 +989,6 @@ function addMarkersToMap(mapInstance, mapId) {
         }
     });
     
-    // Shto cluster group nëse ekziston
     if (clusterGroup) {
         clusterGroup.addTo(mapInstance);
         markersArray.forEach(m => m._clusterGroup = clusterGroup);
@@ -964,7 +999,6 @@ function addMarkersToMap(mapInstance, mapId) {
 function addMiniLegend(mapInstance) {
     if (!mapInstance) return;
     
-    // Kontrollo nëse ka tashmë një legjendë
     mapInstance.eachLayer(layer => {
         if (layer._legendDiv) {
             mapInstance.removeLayer(layer);
@@ -1028,12 +1062,10 @@ function locateMeOnMap() {
             
             mapToUse.setView([latitude, longitude], 16);
             
-            // Hiq markerin e vjetër
             if (userLocationMarker) {
                 mapToUse.removeLayer(userLocationMarker);
             }
             
-            // Shto marker të ri me ikonë të veçantë
             userLocationMarker = L.marker([latitude, longitude], {
                 icon: L.divIcon({
                     html: '<div style="background:#3b82f6;width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 0 15px rgba(59,130,246,0.6);"></div>',
@@ -1044,7 +1076,6 @@ function locateMeOnMap() {
             
             userLocationMarker.bindPopup('📍 Jeni këtu').openPopup();
             
-            // Përditëso info bar
             const infoText = document.getElementById('mapInfoText');
             if (infoText) {
                 infoText.textContent = `📍 Lokacioni juaj: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
@@ -1132,9 +1163,9 @@ function openLajmiModal(id) {
                 scrollWheelZoom: false
             }).setView([lajm.lokacioni.lat, lajm.lokacioni.lng], 15);
             
-            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: '&copy; Esri'
-            }).addTo(modalMap);
+            L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+    attribution: '&copy; Google Maps'
+}).addTo(modalMap);
             
             L.marker([lajm.lokacioni.lat, lajm.lokacioni.lng]).addTo(modalMap)
                 .bindPopup(lajm.title);
@@ -1307,6 +1338,9 @@ function requestNotificationPermission() {
 
 // ============ INICIALIZIMI ============
 document.addEventListener('DOMContentLoaded', () => {
+    // ✅ Kontrollo auth state
+    checkSavedUser();
+    
     // Kontrollo cookies
     if (!localStorage.getItem('cookiesAccepted')) {
         document.getElementById('cookieBanner').classList.add('active');
@@ -1345,4 +1379,459 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Render initial page
     renderPage();
+});
+
+
+// ============ AUTH STATE ============
+let currentUser = null;
+let isGuest = false;
+let guestInfo = null; // { name, surname, phone }
+
+// Kontrollo nëse ka user të ruajtur në localStorage
+function checkSavedUser() {
+    const savedUser = localStorage.getItem('currentUser');
+    const savedGuest = localStorage.getItem('guestInfo');
+    
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        isGuest = false;
+        guestInfo = null;
+        updateUIForLoggedInUser();
+    } else if (savedGuest) {
+        guestInfo = JSON.parse(savedGuest);
+        isGuest = true;
+        currentUser = null;
+        updateUIForGuest();
+    } else {
+        currentUser = null;
+        isGuest = false;
+        guestInfo = null;
+        updateUIForLoggedOutUser();
+    }
+}
+
+// ============ AUTH FUNCTIONS ============
+function openLoginModal() {
+    closeAllAuthModals();
+    document.getElementById('loginModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    switchAuthTab('login');
+}
+
+function closeAllAuthModals() {
+    document.getElementById('loginModal').classList.remove('active');
+    document.getElementById('forgotPasswordModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function switchAuthTab(tab) {
+    // Hiq active nga të gjitha tabs dhe forms
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    
+    if (tab === 'login') {
+        document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
+        document.getElementById('loginForm').classList.add('active');
+    } else if (tab === 'signup') {
+        document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
+        document.getElementById('signupForm').classList.add('active');
+    } else if (tab === 'guest') {
+        document.querySelector('.auth-tab:nth-child(3)').classList.add('active');
+        document.getElementById('guestForm').classList.add('active');
+    }
+}
+
+// ============ GUEST FUNKSIONI I RI ============
+function handleGuestContinue(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('guestName').value.trim();
+    const surname = document.getElementById('guestSurname').value.trim();
+    const phone = document.getElementById('guestPhone').value.trim();
+    
+    // Validimi
+    if (!name || name.length < 2) {
+        showToast('Ju lutemi shkruani emrin tuaj.', 'error');
+        return;
+    }
+    
+    if (!surname || surname.length < 2) {
+        showToast('Ju lutemi shkruani mbiemrin tuaj.', 'error');
+        return;
+    }
+    
+    if (!phone || phone.length < 6) {
+        showToast('Ju lutemi shkruani një numër telefoni të vlefshëm.', 'error');
+        return;
+    }
+    
+    // Ruaj të dhënat e guest
+    guestInfo = {
+        name: name,
+        surname: surname,
+        phone: phone
+    };
+    
+    isGuest = true;
+    currentUser = null;
+    
+    // Ruaj në localStorage
+    localStorage.setItem('guestInfo', JSON.stringify(guestInfo));
+    localStorage.removeItem('currentUser');
+    
+    // Mbyll modalin
+    document.getElementById('loginModal').classList.remove('active');
+    document.body.style.overflow = '';
+    
+    // Pastro formën
+    document.getElementById('guestName').value = '';
+    document.getElementById('guestSurname').value = '';
+    document.getElementById('guestPhone').value = '';
+    
+    // Përditëso UI
+    updateUIForGuest();
+    
+    // Trego mesazh mirëseardhjeje
+    showToast(`Mirë se vini, ${name}! Po shfletoni si Guest.`, 'success');
+    
+    // Trego faqen
+    renderPage();
+}
+
+function loginAsGuest() {
+    // Kjo tani hap direkt guest tab në modal
+    openLoginModal();
+    switchAuthTab('guest');
+}
+
+// ============ HANDLE LOGIN ============
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (email && password.length >= 6) {
+        currentUser = {
+            email: email,
+            name: email.split('@')[0],
+            avatar: null
+        };
+        isGuest = false;
+        guestInfo = null;
+        
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        localStorage.removeItem('guestInfo');
+        
+        document.getElementById('loginModal').classList.remove('active');
+        document.body.style.overflow = '';
+        
+        updateUIForLoggedInUser();
+        showToast(`Mirë se vini, ${currentUser.name}!`, 'success');
+        renderPage();
+    } else {
+        showToast('Email ose fjalëkalim i gabuar. Provoni përsëri.', 'error');
+    }
+}
+
+function handleSignup(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('signupName').value;
+    const surname = document.getElementById('signupSurname').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirm = document.getElementById('signupConfirm').value;
+    
+    if (password !== confirm) {
+        showToast('Fjalëkalimet nuk përputhen.', 'error');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showToast('Fjalëkalimi duhet të ketë të paktën 6 karaktere.', 'error');
+        return;
+    }
+    
+    currentUser = {
+        email: email,
+        name: name,
+        surname: surname,
+        avatar: null
+    };
+    isGuest = false;
+    guestInfo = null;
+    
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    localStorage.removeItem('guestInfo');
+    
+    document.getElementById('loginModal').classList.remove('active');
+    document.body.style.overflow = '';
+    
+    updateUIForLoggedInUser();
+    showToast(`Llogaria u krijua me sukses! Mirë se vini, ${name}!`, 'success');
+    renderPage();
+}
+
+function handleLogout() {
+    currentUser = null;
+    isGuest = false;
+    guestInfo = null;
+    
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('guestInfo');
+    
+    updateUIForLoggedOutUser();
+    document.getElementById('userDropdown').classList.remove('active');
+    
+    // Hiq guest badge nëse ekziston
+    const guestBadge = document.querySelector('.guest-badge');
+    if (guestBadge) guestBadge.remove();
+    
+    showToast('U çkyçët me sukses.', 'info');
+    renderPage();
+}
+
+
+function toggleUserDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+    }
+}
+
+// ============ UI UPDATES ============
+function updateUIForLoggedInUser() {
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('userBtn').style.display = 'flex';
+    
+    const nameMini = document.getElementById('userNameMini');
+    const avatarMini = document.getElementById('userAvatarMini');
+    const userNameEl = document.getElementById('userName');
+    const userEmailEl = document.getElementById('userEmail');
+    const userAvatarEl = document.getElementById('userAvatar');
+    
+    if (currentUser) {
+        const displayName = currentUser.name || currentUser.email.split('@')[0];
+        nameMini.textContent = displayName;
+        userNameEl.textContent = displayName + (currentUser.surname ? ' ' + currentUser.surname : '');
+        userEmailEl.textContent = currentUser.email;
+        
+        const initials = displayName.substring(0, 2).toUpperCase();
+        avatarMini.innerHTML = initials;
+        userAvatarEl.innerHTML = initials;
+        
+        // Ndrysho ngjyrën e avatarit
+        avatarMini.style.background = 'var(--primary)';
+        userAvatarEl.style.background = 'var(--primary)';
+    }
+    
+    // Hiq guest badge
+    const guestBadge = document.querySelector('.guest-badge');
+    if (guestBadge) guestBadge.remove();
+}
+
+function updateUIForLoggedOutUser() {
+    document.getElementById('loginBtn').style.display = 'flex';
+    document.getElementById('userBtn').style.display = 'none';
+    
+    // Hiq guest badge
+    const guestBadge = document.querySelector('.guest-badge');
+    if (guestBadge) guestBadge.remove();
+}
+
+function updateUIForGuest() {
+    document.getElementById('loginBtn').style.display = 'flex';
+    document.getElementById('userBtn').style.display = 'none';
+    
+    // Hiq guest badge ekzistues
+    const existingBadge = document.querySelector('.guest-badge');
+    if (existingBadge) existingBadge.remove();
+    
+    if (guestInfo) {
+        // Shto guest badge me emrin e guest
+        const badge = document.createElement('div');
+        badge.className = 'guest-badge';
+        badge.innerHTML = `
+            <i class="fas fa-user-secret"></i> 
+            Guest: <span class="guest-badge-name">${guestInfo.name} ${guestInfo.surname}</span>
+            <span class="close-guest-badge" onclick="removeGuestMode()" title="Dil nga Guest Mode">&times;</span>
+        `;
+        document.body.appendChild(badge);
+        
+        // Hiq pas 10 sekondash
+        setTimeout(() => {
+            if (badge.parentElement) {
+                badge.style.opacity = '0';
+                badge.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => badge.remove(), 300);
+            }
+        }, 10000);
+    }
+}
+
+function removeGuestMode() {
+    isGuest = false;
+    guestInfo = null;
+    localStorage.removeItem('guestInfo');
+    
+    const badge = document.querySelector('.guest-badge');
+    if (badge) badge.remove();
+    
+    showToast('Modaliteti Guest u çaktivizua. Hyni për funksione të plota.', 'info');
+    renderPage();
+}
+
+// ============ PËRDITËSO RENDERPAGE PËR GUEST ============
+const originalRenderPage = renderPage;
+renderPage = function() {
+    // Nëse nuk është i loguar dhe nuk është guest, trego auth wall
+    if (!currentUser && !isGuest) {
+        const mainContent = document.getElementById('mainContent');
+        mainContent.innerHTML = `
+            <div class="auth-wall">
+                <div class="auth-wall-content">
+                    <div class="auth-wall-icon">
+                        <i class="fas fa-road"></i>
+                    </div>
+                    <h1>Rrugë në punë <span style="color: var(--primary);">Gjilan</span></h1>
+                    <p>Platforma më e plotë për informacione rreth trafikut dhe infrastrukturës në komunën e Gjilanit.</p>
+                    
+                    <div class="auth-wall-buttons">
+                        <button class="btn btn-primary btn-lg" onclick="openLoginModal()">
+                            <i class="fas fa-sign-in-alt"></i> Hyr / Regjistrohu
+                        </button>
+                        <button class="btn btn-guest btn-lg" onclick="loginAsGuest()">
+                            <i class="fas fa-user-secret"></i> Vazhdo si Guest
+                        </button>
+                    </div>
+                    
+                    <div class="auth-wall-features">
+                        <div class="feature-item">
+                            <i class="fas fa-newspaper"></i>
+                            <span>Lajme në kohë reale</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <span>Hartë interaktive</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-bell"></i>
+                            <span>Njoftime për bllokime</span>
+                        </div>
+                    </div>
+                    
+                    <p class="auth-wall-note">
+                        <i class="fas fa-shield-alt"></i> Të dhënat tuaja janë të sigurta
+                    </p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Nëse është guest, modifiko disa elemente në UI
+    if (isGuest) {
+        // Ruaj referencën origjinale të funksioneve
+        const origOpenSubscribe = window.openSubscribeModal;
+        const origHandleReport = window.handleReport;
+        
+        // Përkohësisht mbishkruaj për guest
+        window.openSubscribeModal = function() {
+            showToast('Si Guest nuk mund të abonoheni. Regjistrohuni për këtë funksion.', 'info');
+        };
+        
+        window.handleReport = function(event) {
+            if (event) event.preventDefault();
+            showToast('Si Guest nuk mund të raportoni. Regjistrohuni për këtë funksion.', 'info');
+        };
+        
+        // Thirr renderin origjinal
+        originalRenderPage();
+        
+        // Pastaj modifiko butonat në DOM
+        setTimeout(() => {
+            // Bëj subscribe widget të duket i çaktivizuar
+            const subscribeWidget = document.querySelector('.subscribe-widget');
+            if (subscribeWidget) {
+                subscribeWidget.classList.add('guest-limited');
+                const button = subscribeWidget.querySelector('.btn-warning');
+                if (button) {
+                    button.textContent = 'Regjistrohu për njoftime';
+                    button.onclick = function() {
+                        showToast('Regjistrohuni për t\'u abonuar në njoftime.', 'info');
+                        openLoginModal();
+                    };
+                }
+            }
+            
+            // Modifiko formën e raportimit
+            const reportForm = document.querySelector('.report-form');
+            if (reportForm) {
+                const submitBtn = reportForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<i class="fas fa-lock"></i> Regjistrohu për të raportuar';
+                    submitBtn.onclick = function(e) {
+                        e.preventDefault();
+                        showToast('Regjistrohuni për të raportuar pengesa.', 'info');
+                        openLoginModal();
+                    };
+                }
+            }
+            
+            // Trego emrin e guest diku në faqe
+            if (guestInfo && document.querySelector('.hero')) {
+                const heroStats = document.querySelector('.hero-stats');
+                if (heroStats) {
+                    const guestWelcome = document.createElement('div');
+                    guestWelcome.className = 'stat-item';
+                    guestWelcome.innerHTML = `
+                        <span class="stat-number" style="font-size:16px;">👋 ${guestInfo.name}</span>
+                        <span class="stat-label">Guest</span>
+                    `;
+                    heroStats.appendChild(guestWelcome);
+                }
+            }
+        }, 200);
+        
+        return;
+    }
+    
+    // Për user të loguar, trego gjithçka normalisht
+    originalRenderPage();
+};
+
+// Modifiko openSubscribeModal për guest
+const originalOpenSubscribe = openSubscribeModal;
+openSubscribeModal = function() {
+    if (isGuest) {
+        showToast('Duhet të keni llogari për t\'u abonuar. Hyni ose regjistrohuni.', 'error');
+        openLoginModal();
+        return;
+    }
+    originalOpenSubscribe();
+};
+
+// Modifiko handleReport për guest
+const originalHandleReport = handleReport;
+handleReport = function(event) {
+    if (isGuest) {
+        event.preventDefault();
+        showToast('Duhet të keni llogari për të raportuar. Hyni ose regjistrohuni.', 'error');
+        openLoginModal();
+        return;
+    }
+    originalHandleReport(event);
+};
+
+// ============ MBYLL DROPDOWN KUR KLIKOHET JASHTË ============
+document.addEventListener('click', function(event) {
+    const userDropdown = document.getElementById('userDropdown');
+    const userBtn = document.getElementById('userBtn');
+    
+    if (userDropdown && userDropdown.classList.contains('active')) {
+        if (!userDropdown.contains(event.target) && !userBtn.contains(event.target)) {
+            userDropdown.classList.remove('active');
+        }
+    }
 });
