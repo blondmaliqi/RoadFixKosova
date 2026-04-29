@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - InfoTraffic Gjilan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h1 class="text-2xl font-bold mb-6">👑 Paneli Admin</h1>
+            
+            <div id="loginForm" class="max-w-md mx-auto">
+                <input type="email" id="adminEmail" placeholder="Email" class="w-full p-3 border rounded-lg mb-3">
+                <input type="password" id="adminPassword" placeholder="Fjalëkalimi" class="w-full p-3 border rounded-lg mb-3">
+                <button onclick="adminLogin()" class="w-full bg-blue-600 text-white p-3 rounded-lg">Kyçu</button>
+            </div>
+            
+            <div id="adminContent" style="display: none;">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold">Menaxhimi i lajmeve</h2>
+                    <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg">Dil</button>
+                </div>
+                <div id="newsTable"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://tu-projekt.supabase.co';
+        const SUPABASE_ANON_KEY = 'tuaj-anon-key';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        async function adminLogin() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+            
+            if (error) {
+                alert('Login i gabuar!');
+            } else {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                loadNews();
+            }
+        }
+        
+        async function loadNews() {
+            const { data } = await supabase.from('news').select('*').order('published_at', { ascending: false });
+            // Render table
+        }
+        
+        function logout() {
+            supabase.auth.signOut();
+            location.reload();
+        }
+    </script>
+</body>
+</html>
