@@ -1,0 +1,132 @@
+# 🚦 Trafiku Gjilan – UI/UX Design Project
+
+## 📌 Përshkrimi i Projektit
+
+Ky projekt paraqet dizajnin UI/UX të një aplikacioni mobil për menaxhimin dhe informimin e trafikut në kohë reale në qytetin e Gjilanit. Qëllimi i aplikacionit është të ndihmojë qytetarët të informohen për gjendjen e trafikut, punimet në rrugë, bllokimet dhe devijimet, si dhe të raportojnë probleme në rrugë.
+
+---
+
+## 🎯 Qëllimi
+
+* Të ofrojë informacion të shpejtë dhe të saktë për trafikun
+* Të mundësojë raportimin nga qytetarët
+* Të krijojë një platformë të menaxhueshme nga administratorët
+* Të ketë një UI modern, të pastër dhe intuitiv
+
+---
+
+## 🎨 Dizajni & Stili
+
+* Ngjyra kryesore: Blu (#1E3A8A, #3B82F6)
+* Background: i bardhë / gri i lehtë (#F9FAFB)
+* Stil modern me:
+
+  * Rounded corners
+  * Soft shadows
+  * Minimalist layout
+  * Ikona të pastra (outline style)
+
+---
+
+## 📱 Faqet e Dizajnuara
+
+### 🏠 1. Ballina (Home)
+
+* Header me logo dhe search icon
+* Search bar për rrugë dhe lokacione
+* Filtra horizontal (Punime, Bllokime, Devijime, Projekte)
+* Lista e lajmeve (cards)
+* Live indicator (përditësime në kohë reale)
+
+---
+
+### 🗺️ 2. Harta (Map)
+
+* Hartë interaktive me markers
+* Ngjyra të ndryshme sipas kategorisë:
+
+  * 🚧 Punime
+  * ⛔ Bllokime
+  * 🔀 Devijime
+* Panel me detaje për secilin event
+* UI i pastër dhe fokus në përdorueshmëri
+
+---
+
+### ➕ 3. Raporto (Reports)
+
+* Formë për raportim nga përdoruesit
+* Input për përshkrim
+* Zgjedhje e kategorisë
+* Zgjedhje e lokacionit në hartë
+* Buton për dërgim
+
+---
+
+### 🔔 4. Njoftime (Notifications)
+
+* Lista e njoftimeve në kohë reale
+* Status i lexuar / pa lexuar
+* Ikona sipas llojit të njoftimit
+* Navigim direkt në lajm
+
+---
+
+### 👤 5. Profili (Profile)
+
+#### 👤 User Normal:
+
+* Informacion personal
+* Preferencat (njoftime, dark mode)
+* Aktiviteti i përdoruesit
+* Lokacionet e preferuara
+* Logout
+
+#### 🛠️ Admin:
+
+* Dashboard me statistika
+* Menaxhim i lajmeve
+* Menaxhim i raportimeve
+* Menaxhim i përdoruesve
+* Burime (scraping)
+* Logs të aktiviteteve
+
+---
+
+### 🔐 6. Login
+
+* Formë për email dhe fjalëkalim
+* Buton “Hyr në llogari”
+* Opsion “Më mbaj të kyçur”
+* UI clean dhe profesional
+
+---
+
+## 🧩 Navigimi
+
+Aplikacioni përdor një **Bottom Navigation Bar** me 5 seksione:
+
+* 🏠 Ballina
+* 🗺️ Harta
+* ➕ Raporto
+* 🔔 Njoftime
+* 👤 Profili
+
+---
+
+## 💡 Veçoritë Kryesore
+
+* UI/UX modern dhe responsive
+* Fokus në përdorueshmëri (UX)
+* Strukturë e qartë dhe intuitive
+* Dizajn i përshtatshëm për aplikacione reale mobile
+* Ndërfaqe për user dhe admin
+
+---
+
+
+## 👨‍💻 Autori
+
+Blon Kallaba
+
+---
