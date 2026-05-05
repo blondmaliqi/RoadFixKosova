@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoadFix Gjilan – Lajme të trafikut në kohë reale</title>
+    <meta name="description" content="Platforma për lajme të trafikut në Gjilan. Punime, bllokime, devijime dhe projekte infrastrukturore në kohë reale.">
+    <meta name="keywords" content="Gjilan, trafik, rrugë, bllokim, punime, devijime, infrastrukturë">
+    
+    <meta property="og:title" content="RoadFix Gjilan – Lajme të trafikut në kohë reale">
+    <meta property="og:description" content="Platforma për lajme të trafikut në Gjilan. Punime, bllokime, devijime dhe projekte infrastrukturore.">
+    <meta property="og:type" content="website">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RoadFix Gjilan">
+
+<link rel="apple-touch-icon" href="roadfixgjilanlogo.png">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e40af">
+    
+
+    
+    <!-- Leaflet CSS - Versioni 1.9.4 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Leaflet Fullscreen CSS -->
+     <link rel="stylesheet" href="https://unpkg.com/leaflet-fullscreen@1.0.2/dist/leaflet.fullscreen.css" crossorigin="anonymous" />
+    
+    <!-- Leaflet MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    <!-- ============ NAVBAR ============ -->
+<nav class="navbar" id="navbar">
+    <div class="container">
+        <div class="nav-wrapper">
+            <a href="index.html" class="logo" onclick="navigateTo('home')">
+                <img src="logoroadfixgjilan.png" alt="RoadFix Gjilan Logo" class="logo-img">
+                <div class="logo-text">
+                   
+                </div>
+            </a>
+                
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#" class="nav-link active" onclick="navigateTo('home')">Ballina</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(event)">
+                            Kategoritë <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <div class="dropdown-menu" id="categoryDropdown">
+                            <a href="#" onclick="navigateTo('kategoria', 'punime')">
+                                <i class="fas fa-tools"></i> Punime në rrugë
+                            </a>
+                            <a href="#" onclick="navigateTo('kategoria', 'bllokime')">
+                                <i class="fas fa-ban"></i> Bllokime trafiku
+                            </a>
+                            <a href="#" onclick="navigateTo('kategoria', 'devijime')">
+                                <i class="fas fa-directions"></i> Devijime
+                            </a>
+                            <a href="#" onclick="navigateTo('kategoria', 'projekte')">
+                                <i class="fas fa-hard-hat"></i> Projekte infrastrukturore
+                            </a>
+                        </div>
+                    </li>
+                    <li><a href="#" class="nav-link" onclick="navigateTo('arkiva')">Arkiva</a></li>
+                    <li><a href="#" class="nav-link" onclick="navigateTo('rreth')">Rreth nesh</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+    <button class="btn-icon search-toggle" id="searchToggle" onclick="toggleSearch()">
+        <i class="fas fa-search"></i>
+    </button>
+    
+    <!-- User button - tregon login ose user menu -->
+    <a href="login.html" class="btn btn-outline btn-login" id="loginBtn">
+    <i class="fas fa-sign-in-alt"></i>
+    <span class="btn-text">Hyr</span>
+</a>
+        
+        <!-- Butoni kur useri është i loguar (i fshehur si default) -->
+        <button class="btn btn-user-logged" id="userBtn" onclick="toggleUserDropdown()" style="display:none;">
+            <div class="user-avatar-mini" id="userAvatarMini">
+                <i class="fas fa-user"></i>
+            </div>
+            <span class="btn-text user-name-mini" id="userNameMini">User</span>
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+    
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+</div>
+            
+            <div class="search-bar" id="searchBar">
+                <div class="search-form">
+                    <input type="text" id="searchInput" placeholder="Kërko lajme, rrugë, lagje..." class="search-input" onkeyup="handleSearch(event)">
+                    <button class="btn-search" onclick="performSearch()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- ============ PËRMBAJTJA KRYESORE ============ -->
+    <main id="mainContent"></main>
+    
+    <!-- ============ FOOTER ============ -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col" style="text-align:center;">
+                <!-- Logo më e madhe në qendër -->
+                <img src="logoroadfixgjilan2.png" alt="RoadFix Gjilan" style="height:110px;width:auto;margin-bottom:16px;">
+                <p>
+                    Platforma më e plotë për informacione rreth trafikut dhe 
+                    infrastrukturës në komunën e Gjilanit.
+                </p>
+                <div class="social-links" style="justify-content:center;">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Linke të shpejta</h4>
+                <ul>
+                    <li><a href="#" onclick="navigateTo('kategoria', 'bllokime')">Bllokime aktive</a></li>
+                    <li><a href="#" onclick="navigateTo('kategoria', 'punime')">Punime në rrugë</a></li>
+                    <li><a href="#" onclick="navigateTo('arkiva')">Arkiva e lajmeve</a></li>
+                    <li><a href="#" onclick="navigateTo('rreth')">Rreth nesh</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Burime zyrtare</h4>
+                <ul>
+                    <li><a href="https://gjilan.rks-gov.net" target="_blank">Komuna e Gjilanit</a></li>
+                    <li><a href="https://www.kosovopolice.com" target="_blank">Policia e Kosovës</a></li>
+                    <li><a href="https://gjilan.rks-gov.net" target="_blank">ARRSH</a></li>
+                    <li><a href="https://gjilan.rks-gov.net" target="_blank">Drejtoria për Shërbime Publike</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Kontakti</h4>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> info@rrugenepune-gjilan.info</li>
+                    <li><i class="fas fa-phone"></i> +383 44 000 000</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Gjilan, Kosovë</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 RoadFix Gjilan. Të gjitha të drejtat e rezervuara.</p>
+            <div class="footer-links-bottom">
+                <a href="kushtet.html">Kushtet e përdorimit</a>
+                <a href="privatësia.html">Privatësia (GDPR)</a>
+            </div>
+        </div>
+    </div>
+</footer>
+    
+    <!-- ============ MODALI I ABONIMIT ============ -->
+    <div class="modal" id="subscribeModal">
+        <div class="modal-overlay" onclick="closeSubscribeModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSubscribeModal()">&times;</button>
+            <div class="modal-icon">
+                <i class="fas fa-bell"></i>
+            </div>
+            <h2>Abonohu për njoftime</h2>
+            <p>Merr njoftime në kohë reale për bllokime, punime dhe devijime në trafik.</p>
+            
+            <form class="subscribe-modal-form" onsubmit="handleSubscribe(event)">
+                <input type="email" id="subscribeEmail" placeholder="Email-i juaj" class="form-input" required>
+                <div class="modal-categories">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="subBllokime" checked> Bllokime trafiku
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="subPunime" checked> Punime në rrugë
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="subDevijime"> Devijime
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="subProjekte"> Projekte infrastrukturore
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    Abonohu tani
+                </button>
+                <p class="privacy-note">
+                    <i class="fas fa-lock"></i> Të dhënat tuaja janë të sigurta. 
+                    Mund të çabonoheni në çdo moment.
+                </p>
+            </form>
+        </div>
+    </div>
+    
+    <!-- ============ MODALI I LAJMIT ============ -->
+    <div class="modal" id="lajmiModal">
+        <div class="modal-overlay" onclick="closeLajmiModal()"></div>
+        <div class="modal-content modal-lajm">
+            <button class="modal-close" onclick="closeLajmiModal()">&times;</button>
+            <div id="lajmiModalContent"></div>
+        </div>
+    </div>
+    
+    <!-- ============ MODALI I HARTËS FULLSCREEN ============ -->
+    <div class="modal modal-fullscreen" id="mapModal">
+        <div class="modal-overlay" onclick="closeMapModal()"></div>
+        <div class="modal-content map-modal-content">
+            <button class="modal-close" onclick="closeMapModal()">&times;</button>
+            <div class="map-modal-header">
+                <h2><i class="fas fa-map-marked-alt"></i> Harta interaktive e trafikut - Gjilan</h2>
+                <div class="map-controls">
+                   <div class="map-layer-controls">
+    <button class="map-layer-btn active" data-layer="street" onclick="switchFullscreenMapType('street')">
+        <i class="fas fa-road"></i> Hartë
+    </button>
+    <button class="map-layer-btn" data-layer="satellite" onclick="switchFullscreenMapType('satellite')">
+        <i class="fas fa-satellite"></i> Satelit
+    </button>
+    <button class="map-layer-btn" data-layer="terrain" onclick="switchFullscreenMapType('terrain')">
+        <i class="fas fa-mountain"></i> Terren
+    </button>
+</div>
+                    <div class="map-legend">
+                        <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Bllokime</span>
+                        <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Punime</span>
+                        <span class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> Devijime</span>
+                        <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Projekte</span>
+                    </div>
+                    <button class="map-locate-btn" onclick="locateMeOnMap()">
+                        <i class="fas fa-location-crosshairs"></i> Lokacioni im
+                    </button>
+                </div>
+            </div>
+            <div id="fullscreenMap" class="fullscreen-map"></div>
+            <div class="map-info-bar" id="mapInfoBar">
+                <span id="mapInfoText">Klikoni mbi markerët për më shumë informacion</span>
+            </div>
+        </div>
+    </div>
+    
+   
+    
+    <!-- ============ TOAST CONTAINER ============ -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Leaflet JS - Versioni 1.9.4 -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Leaflet Fullscreen -->
+    <script src="https://unpkg.com/leaflet-fullscreen@1.0.2/dist/Leaflet.fullscreen.min.js"></script>
+    
+    <!-- Leaflet MarkerCluster -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    
+    
+    
+    <script src="script.js"></script>
+
+
+
+   <!-- ============ MODALI I AUTENTIKIMIT ============ -->
+<div class="modal" id="loginModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content auth-modal mobile-fullscreen">
+        <button class="modal-close" onclick="closeAllAuthModals()">&times;</button>
+        <div class="auth-container">
+            <!-- Auth Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">
+                    <i class="fas fa-sign-in-alt"></i> Hyr
+                </button>
+                <button class="auth-tab" onclick="switchAuthTab('signup')">
+                    <i class="fas fa-user-plus"></i> Regjistrohu
+                </button>
+                <button class="auth-tab guest-tab" onclick="switchAuthTab('guest')">
+                    <i class="fas fa-user-secret"></i> Guest
+                </button>
+            </div>
+            
+            <!-- Login Form -->
+            <div class="auth-form active" id="loginForm">
+                <div class="auth-icon">
+                    <i class="fas fa-sign-in-alt"></i>
+                </div>
+                <h2>Mirë se vini përsëri</h2>
+                <p>Hyni në llogarinë tuaj për të vazhduar</p>
+                
+                <form onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="loginEmail" placeholder="Email-i juaj" class="form-input" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPassword" placeholder="Fjalëkalimi" class="form-input" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Më mbaj mend
+                        </label>
+                        <a href="#" class="forgot-password" onclick="showForgotPassword(event)">Harruat fjalëkalimin?</a>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block btn-auth">
+                        <i class="fas fa-sign-in-alt"></i> Hyr
+                    </button>
+                </form>
+                
+                <div class="auth-divider">
+                    <span>ose</span>
+                </div>
+                
+                <div class="social-login">
+                    <button class="social-btn google" onclick="socialLogin('google')">
+                        <i class="fab fa-google"></i> Vazhdo me Google
+                    </button>
+                    <button class="social-btn facebook" onclick="socialLogin('facebook')">
+                        <i class="fab fa-facebook-f"></i> Vazhdo me Facebook
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Signup Form -->
+            <div class="auth-form" id="signupForm">
+                <div class="auth-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h2>Krijo llogari</h2>
+                <p>Regjistrohuni për të përfituar të gjitha shërbimet</p>
+                
+                <form onsubmit="handleSignup(event)">
+                    <div class="input-row">
+                        <div class="input-group half">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="signupName" placeholder="Emri" class="form-input" required>
+                        </div>
+                        <div class="input-group half">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="signupSurname" placeholder="Mbiemri" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signupEmail" placeholder="Email-i juaj" class="form-input" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="signupPhone" placeholder="Numri i telefonit (opsionale)" class="form-input">
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signupPassword" placeholder="Fjalëkalimi" class="form-input" required minlength="6">
+                        <button type="button" class="password-toggle" onclick="togglePassword('signupPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signupConfirm" placeholder="Konfirmo fjalëkalimin" class="form-input" required minlength="6">
+                    </div>
+                    <div class="terms-check">
+                        <label class="checkbox-label">
+                            <input type="checkbox" required>
+                            <span>Pajtohem me <a href="#">Kushtet e përdorimit</a> dhe <a href="#">Politikën e privatësisë</a></span>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block btn-auth">
+                        <i class="fas fa-user-plus"></i> Regjistrohu
+                    </button>
+                </form>
+            </div>
+            
+            <!-- ============ GUEST FORM - E THJESHTË ============ -->
+            <div class="auth-form" id="guestForm">
+                <div class="auth-icon guest-icon">
+                    <i class="fas fa-user-secret"></i>
+                </div>
+                <h2>Vazhdo si Guest</h2>
+                <p>Shkruani vetëm të dhënat tuaja për të vazhduar pa llogari</p>
+                
+                <form onsubmit="handleGuestContinue(event)">
+                    <div class="input-row">
+                        <div class="input-group half">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="guestName" placeholder="Emri" class="form-input" required>
+                        </div>
+                        <div class="input-group half">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="guestSurname" placeholder="Mbiemri" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="guestPhone" placeholder="Numri i telefonit" class="form-input" required>
+                    </div>
+                    
+                    <div class="guest-benefits">
+                        <h4><i class="fas fa-info-circle"></i> Çfarë mund të bëni si Guest:</h4>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Shikoni të gjitha lajmet e trafikut</li>
+                            <li><i class="fas fa-check-circle"></i> Përdorni hartën interaktive</li>
+                            <li><i class="fas fa-check-circle"></i> Kërkoni dhe filtroni lajmet</li>
+                            <li><i class="fas fa-times-circle"></i> Nuk mund të abonoheni për njoftime</li>
+                            <li><i class="fas fa-times-circle"></i> Nuk mund të raportoni pengesa</li>
+                        </ul>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-guest btn-block btn-auth">
+                        <i class="fas fa-user-secret"></i> Vazhdo si Guest
+                    </button>
+                </form>
+                
+                <p class="guest-register-prompt">
+                    Dëshironi të përfitoni të gjitha shërbimet? 
+                    <a href="#" onclick="switchAuthTab('signup')">Regjistrohuni këtu</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ MODALI I HARRESËS SË FJALËKALIMIT ============ -->
+<div class="modal" id="forgotPasswordModal">
+    <div class="modal-overlay" onclick="closeForgotPassword()"></div>
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeForgotPassword()">&times;</button>
+        <div class="auth-icon">
+            <i class="fas fa-key"></i>
+        </div>
+        <h2>Harruat fjalëkalimin?</h2>
+        <p>Shkruani email-in tuaj dhe do t'ju dërgojmë një link për ta rikthyer fjalëkalimin.</p>
+        
+        <form onsubmit="handleForgotPassword(event)">
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="forgotEmail" placeholder="Email-i juaj" class="form-input" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-paper-plane"></i> Dërgo linkun
+            </button>
+        </form>
+        <p class="back-to-login">
+            <a href="#" onclick="closeForgotPassword(); openLoginModal();">← Kthehu te hyrja</a>
+        </p>
+    </div>
+</div>
+
+<!-- ============ USER MENU (kur është i loguar) ============ -->
+<div class="user-dropdown" id="userDropdown">
+    <div class="user-dropdown-header">
+        <div class="user-avatar" id="userAvatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="user-info">
+            <span class="user-name" id="userName">Përdorues</span>
+            <span class="user-email" id="userEmail">user@email.com</span>
+        </div>
+    </div>
+   <div class="user-dropdown-links">
+    <a href="profili.html">
+        <i class="fas fa-user-circle"></i> Profili im
+    </a>
+    <a href="cilësimet.html">
+        <i class="fas fa-cog"></i> Cilësimet
+    </a>
+    <a href="te-ruajtura.html">
+        <i class="fas fa-bookmark"></i> Të ruajtura
+    </a>
+    <div class="user-dropdown-divider"></div>
+    <a href="#" onclick="handleLogout()" class="logout-link">
+        <i class="fas fa-sign-out-alt"></i> Dil
+    </a>
+</div>
+</div>
+    
+<!-- ============ SPLASH SCREEN - ROADFIX GJILAN ============ -->
+<div id="splash-screen">
+    <div class="splash-content">
+        <!-- Logoja -->
+        <img src="logoroadfixgjilan.png" alt="RoadFix Gjilan" class="splash-logo">
+        
+        <!-- Titulli: RoadFix në të zezë + Gjilan në të kaltër -->
+        <h1 class="splash-title">
+            <span class="text-black">RoadFix</span> <span class="text-blue">Gjilan</span>
+        </h1>
+        
+        <!-- Nëntitulli -->
+        <p class="splash-subtitle">Lajme  dhe njoftime për trafikun në kohë reale</p>
+        
+        <!-- Progress bar -->
+        <div class="splash-progress-container">
+            <div class="splash-progress-bar" id="splashProgressBar"></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
