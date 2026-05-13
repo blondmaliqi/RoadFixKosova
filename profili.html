@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profili im - RoadFix Gjilan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e40af; --primary-light: #3b82f6; --primary-dark: #1e3a8a;
+            --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+            --gray-400: #94a3b8; --gray-500: #64748b; --gray-600: #475569;
+            --gray-700: #334155; --gray-800: #1e293b; --gray-900: #0f172a;
+            --white: #ffffff; --radius-lg: 16px; --radius-md: 10px;
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --transition: all 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f0f4ff 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .profile-container {
+            width: 100%; max-width: 480px;
+        }
+        .profile-card {
+            background: var(--white); border-radius: 20px; padding: 40px 32px;
+            box-shadow: var(--shadow-lg); text-align: center; animation: slideUp 0.5s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .profile-avatar {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: var(--primary); color: var(--white);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px; font-weight: 700; margin: 0 auto 16px;
+        }
+        .profile-card h2 { font-size: 24px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+        .profile-card .role { font-size: 14px; color: var(--primary); font-weight: 500; margin-bottom: 20px; }
+        .info-item {
+            display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+            background: var(--gray-50); border-radius: var(--radius-md); margin-bottom: 10px;
+            text-align: left;
+        }
+        .info-item i { color: var(--primary); font-size: 18px; width: 24px; text-align: center; }
+        .info-item .label { font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-item .value { font-size: 14px; color: var(--gray-700); font-weight: 500; }
+        .btn-primary {
+            width: 100%; padding: 14px; background: var(--primary); color: var(--white);
+            border: none; border-radius: var(--radius-md); font-size: 15px; font-weight: 600;
+            cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 20px;
+            transition: var(--transition);
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: var(--gray-500); font-size: 13px; text-decoration: none;
+            margin-top: 16px; transition: var(--transition);
+        }
+        .back-link:hover { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="profile-avatar" id="profileInitials">U</div>
+            <h2 id="profileName">Përdorues</h2>
+            <p class="role">Anëtar</p>
+            
+            <div class="info-item">
+                <i class="fas fa-envelope"></i>
+                <div><div class="label">Email</div><div class="value" id="profileEmail">user@email.com</div></div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-phone"></i>
+                <div><div class="label">Telefoni</div><div class="value" id="profilePhone">+383 00 000 000</div></div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-calendar-alt"></i>
+                <div><div class="label">Anëtar që nga</div><div class="value" id="profileDate">2026</div></div>
+            </div>
+            
+            <button class="btn-primary" onclick="alert('Funksioni do të jetë së shpejti!')">
+                <i class="fas fa-edit"></i> Redakto profilin
+            </button>
+        </div>
+        <a href="index.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Kthehu në ballinë
+        </a>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const guest = JSON.parse(localStorage.getItem('guestInfo'));
+        
+        if (user) {
+            document.getElementById('profileName').textContent = user.name + (user.surname ? ' ' + user.surname : '');
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('profilePhone').textContent = user.phone || '+383 00 000 000';
+            document.getElementById('profileInitials').textContent = user.name.substring(0, 1).toUpperCase();
+        } else if (guest) {
+            document.getElementById('profileName').textContent = guest.name + ' ' + guest.surname + ' (Guest)';
+            document.getElementById('profileEmail').textContent = 'Nuk disponohet';
+            document.getElementById('profilePhone').textContent = guest.phone;
+            document.getElementById('profileInitials').textContent = guest.name.substring(0, 1).toUpperCase();
+        }
+    </script>
+</body>
+</html>

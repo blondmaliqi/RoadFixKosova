@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politika e Privatësisë - RoadFix Gjilan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e40af; --primary-light: #3b82f6; --primary-dark: #1e3a8a;
+            --success: #10b981; --gray-50: #f8fafc; --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0; --gray-400: #94a3b8; --gray-500: #64748b;
+            --gray-600: #475569; --gray-700: #334155; --gray-800: #1e293b;
+            --gray-900: #0f172a; --white: #ffffff; --radius-lg: 16px;
+            --radius-md: 10px; --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f0f4ff 100%);
+            min-height: 100vh; padding: 20px;
+        }
+        .page-container { max-width: 750px; margin: 0 auto; }
+        .content-card {
+            background: var(--white); border-radius: 20px; padding: 40px 36px;
+            box-shadow: var(--shadow-lg); animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header { text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--gray-100); }
+        .page-icon {
+            width: 64px; height: 64px; background: var(--success);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 28px; color: var(--white);
+            margin: 0 auto 16px;
+        }
+        .page-header h1 { font-size: 28px; font-weight: 800; color: var(--gray-900); margin-bottom: 6px; }
+        .page-header .update { font-size: 12px; color: var(--gray-400); }
+
+        .section { margin-bottom: 28px; }
+        .section:last-child { margin-bottom: 0; }
+        .section h2 {
+            font-size: 18px; font-weight: 700; color: var(--gray-900);
+            margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+        }
+        .section h2 span {
+            width: 28px; height: 28px; background: var(--success);
+            color: var(--white); border-radius: 50%; display: inline-flex;
+            align-items: center; justify-content: center; font-size: 14px;
+            flex-shrink: 0;
+        }
+        .section p { font-size: 14px; color: var(--gray-600); line-height: 1.7; margin-bottom: 10px; }
+        .section ul { padding-left: 20px; margin-bottom: 10px; }
+        .section ul li { font-size: 14px; color: var(--gray-600); line-height: 1.7; margin-bottom: 6px; }
+
+        .highlight-box {
+            background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: var(--radius-md);
+            padding: 16px 20px; margin: 16px 0;
+        }
+        .highlight-box p { font-size: 13px; color: #065f46; margin-bottom: 4px; font-weight: 500; }
+        .highlight-box i { color: var(--success); margin-right: 6px; }
+
+        .warning-box {
+            background: #fffbeb; border: 1px solid #fcd34d; border-radius: var(--radius-md);
+            padding: 16px 20px; margin: 16px 0;
+        }
+        .warning-box p { font-size: 13px; color: #92400e; margin-bottom: 4px; font-weight: 500; }
+        .warning-box i { color: #f59e0b; margin-right: 6px; }
+
+        .info-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 16px 0;
+        }
+        .info-card {
+            background: var(--gray-50); border-radius: var(--radius-md);
+            padding: 16px; text-align: center;
+        }
+        .info-card i { font-size: 24px; color: var(--success); margin-bottom: 8px; }
+        .info-card h4 { font-size: 14px; font-weight: 600; color: var(--gray-800); margin-bottom: 4px; }
+        .info-card p { font-size: 12px; color: var(--gray-500); margin: 0; }
+
+        .page-footer { text-align: center; margin-top: 20px; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: var(--gray-500); font-size: 13px; text-decoration: none;
+            transition: var(--transition);
+        }
+        .back-link:hover { color: var(--primary); }
+        .version { font-size: 11px; color: var(--gray-400); margin-top: 12px; }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .content-card { padding: 28px 18px; border-radius: 16px; }
+            .page-header h1 { font-size: 22px; }
+            .page-icon { width: 50px; height: 50px; font-size: 22px; }
+            .section h2 { font-size: 16px; }
+            .section p, .section ul li { font-size: 13px; }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="content-card">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="page-icon"><i class="fas fa-shield-alt"></i></div>
+                <h1>Politika e Privatësisë</h1>
+                <p class="update">Përditësuar: 1 Janar 2026 • Në përputhje me GDPR</p>
+            </div>
+
+            <!-- Përmbledhje -->
+            <div class="highlight-box">
+                <p><i class="fas fa-check-circle"></i> <strong>Përmbledhje:</strong> Ne mbledhim vetëm të dhënat e nevojshme për të ofruar shërbimin tonë. Asnjëherë nuk i shesim, japim me qira ose ndajmë të dhënat tuaja personale me palë të treta për qëllime marketingu.</p>
+            </div>
+
+            <!-- Seksioni 1 -->
+            <div class="section">
+                <h2><span>1</span> Cilat të dhëna mbledhim</h2>
+                <p>Ne mbledhim këto lloje të dhënash:</p>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <i class="fas fa-user"></i>
+                        <h4>Të dhënat e profilit</h4>
+                        <p>Emri, mbiemri, email-i, numri i telefonit</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h4>Të dhënat e lokacionit</h4>
+                        <p>Vetëm kur përdorni funksionin e hartës</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Të dhënat e përdorimit</h4>
+                        <p>Faqet e vizituara, koha e qëndrimit</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seksioni 2 -->
+            <div class="section">
+                <h2><span>2</span> Si i përdorim të dhënat</h2>
+                <p>Të dhënat tuaja përdoren për këto qëllime:</p>
+                <ul>
+                    <li>Ofrimi i shërbimeve të platformës (lajme, hartë, njoftime)</li>
+                    <li>Personalizimi i përvojës suaj</li>
+                    <li>Dërgimi i njoftimeve për bllokime dhe punime</li>
+                    <li>Përmirësimi i platformës bazuar në sjelljen e përdoruesve</li>
+                    <li>Siguria dhe parandalimi i abuzimeve</li>
+                </ul>
+            </div>
+
+            <!-- Seksioni 3 -->
+            <div class="section">
+                <h2><span>3</span> Ruajtja e të dhënave</h2>
+                <p>
+                    Të dhënat tuaja ruhen në mënyrë të sigurt. 
+                    Ne përdorim masa sigurie të avancuara për të mbrojtur të dhënat 
+                    tuaja nga qasja e paautorizuar, ndryshimi, zbulimi ose shkatërrimi.
+                </p>
+                <div class="warning-box">
+                    <p><i class="fas fa-exclamation-triangle"></i> <strong>E rëndësishme:</strong> Megjithëse ne marrim masa të arsyeshme për të mbrojtur të dhënat tuaja, asnjë sistem nuk është 100% i sigurt.</p>
+                </div>
+            </div>
+
+            
+
+            <!-- Seksioni 5 -->
+            <div class="section">
+                <h2><span>4</span> Të drejtat tuaja (GDPR)</h2>
+                <p>Si përdorues, ju keni këto të drejta:</p>
+                <ul>
+                    <li>✅ <strong>E drejta e aksesit:</strong> Të dini çfarë të dhënash kemi për ju</li>
+                    <li>✅ <strong>E drejta e korrigjimit:</strong> Të kërkoni ndryshimin e të dhënave të pasakta</li>
+                    <li>✅ <strong>E drejta e fshirjes:</strong> Të kërkoni fshirjen e të dhënave tuaja</li>
+                    <li>✅ <strong>E drejta e kufizimit:</strong> Të kufizoni përpunimin e të dhënave</li>
+                    <li>✅ <strong>E drejta e transferimit:</strong> Të merrni të dhënat tuaja në format të lexueshëm</li>
+                    <li>✅ <strong>E drejta e kundërshtimit:</strong> Të kundërshtoni përpunimin e të dhënave</li>
+                </ul>
+            </div>
+
+            <!-- Seksioni 6 -->
+            <div class="section">
+                <h2><span>5</span> Ndajra e të dhënave me palë të treta</h2>
+                <p>
+                    Ne <strong>nuk i shesim, nuk i japim me qira dhe nuk i tregtojmë</strong> të dhënat tuaja personale. 
+                    Të dhënat mund të ndahen vetëm në këto raste:
+                </p>
+                <ul>
+                    <li>Me pëlqimin tuaj të shprehur</li>
+                    <li>Kur kërkohet me ligj</li>
+                    <li>Për të mbrojtur të drejtat tona ligjore</li>
+                </ul>
+            </div>
+
+            <!-- Seksioni 7 -->
+            <div class="section">
+                <h2><span>6</span> Ruajtja dhe fshirja e të dhënave</h2>
+                <p>
+                    Të dhënat tuaja ruhen për aq kohë sa është e nevojshme për të ofruar shërbimin. 
+                    Mund të kërkoni fshirjen e llogarisë dhe të dhënave tuaja në çdo moment përmes 
+                    faqes së <a href="cilësimet.html" style="color:var(--primary);">Cilësimeve</a>.
+                </p>
+            </div>
+
+            <!-- Seksioni 8 -->
+            <div class="section">
+                <h2><span>7</span> Kontakti për Privatësinë</h2>
+                <p>
+                    Për pyetje rreth kësaj politike ose për të ushtruar të drejtat tuaja, na kontaktoni:
+                </p>
+                <div class="highlight-box">
+                    <p><i class="fas fa-envelope"></i> privacy@roadfixgjilan.com</p>
+                    <p><i class="fas fa-phone"></i> +383 44 000 000</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Gjilan, Kosovë</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="page-footer">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Kthehu në ballinë
+            </a>
+            <p class="version">RoadFix Gjilan • © 2026 • Në përputhje me GDPR</p>
+        </div>
+    </div>
+</body>
+</html>
